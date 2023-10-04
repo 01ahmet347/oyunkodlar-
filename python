@@ -1,0 +1,270 @@
+import random
+
+def oyun():
+    odalar = [
+        'Mutfak',
+        'Salon',
+        'Yatak Odası',
+        'Banyo',
+        'Garaj'
+    ]
+    hazine_odasi = random.choice(odalar)
+    print("Hazine odasını bulmak için odalar arasında dolaşıyorsunuz.")
+    print("Her odada ne yapmak istediğinizi seçin:")
+    
+    secenekler = ["1", "2", "3", "4", "5"]
+    hazine_bulundu = False
+    
+    while not hazine_bulundu:
+        print("-------------------------")
+        for i in range(len(odalar)):
+            print(f"{i+1}. {odalar[i]}")
+        print("-------------------------")
+        
+        secim = input("Hangi odaya girmek istersiniz? (1-5): ")
+        
+        if secim not in secenekler:
+            print("Geçersiz bir seçim yaptınız. Lütfen tekrar deneyin.")
+            continue
+        
+        secim = int(secim) - 1
+        secilen_oda = odalar[secim]
+        
+        if secilen_oda == hazine_odasi:
+            print("Tebrikler! Hazine odasını buldunuz!")
+            hazine_bulundu = True
+        else:
+            print(f"{secilen_oda}'da hazine odası değil. Başka bir oda seçin.")
+
+    print("Oyun bitti!")
+
+
+
+Bu kodu çalıştırdığınızda, kullanıcıdan bir oda seçmesi istenecektir. Seçilen oda hazine odası ise, oyuncu oyunu kazanır. Eğer seçilen oda hazine odası değilse, oyuncu diğer odalardan birini seçmeye devam eder. Kod, kullanıcının seçimlerine göre uygun mesajları ekrana yazdırır ve sonunda oyunu tamamladığını belirtir.
+
+Tabii ki, bu sadece basit bir örnek. Daha karmaşık ve ilginç bir oyun için daha fazla özellik ekleyebilirsiniz. Oyunu istediğiniz gibi geliştirebilir ve özelleştirebilirsiniz.
+
+
+
+
+
+
+import pygame
+
+# Oyun ekranı boyutları
+WIDTH = 800
+HEIGHT = 600
+
+# Renkler
+WHITE = (255, 255, 255)
+BLUE = (0, 0, 255)
+
+pygame.init()
+ekran = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Grafik Tabanlı Oyun")
+
+saat = pygame.time.Clock()
+
+oyuncu_x = 50
+oyuncu_y = 50
+oyuncu_hizi = 5
+
+oyun_devam = True
+
+while oyun_devam:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            oyun_devam = False
+
+    tuslar = pygame.key.get_pressed()
+    if tuslar[pygame.K_LEFT]:
+        oyuncu_x -= oyuncu_hizi
+    if tuslar[pygame.K_RIGHT]:
+        oyuncu_x += oyuncu_hizi
+    if tuslar[pygame.K_UP]:
+        oyuncu_y -= oyuncu_hizi
+    if tuslar[pygame.K_DOWN]:
+        oyuncu_y += oyuncu_hizi
+
+    ekran.fill(WHITE)
+    pygame.draw.rect(ekran, BLUE, (oyuncu_x, oyuncu_y, 50, 50))
+    
+    pygame.display.flip()
+    saat.tick(60)
+
+pygame.quit()
+
+
+Bu örnekte, pygame kütüphanesini kullanarak bir pencere oluşturuyoruz. Ardından, oyun döngüsünde kullanıcının tuş girişlerini dinliyoruz ve oyuncunun pozisyonunu güncelliyoruz. Ekranı temizledikten sonra, oyuncuyu bir mavi kare olarak çiziyoruz. Son olarak, ekranda gösterim güncelleniyor ve oyunun FPS (frame per second) hızı 60 olarak ayarlanıyor.
+
+Bu sadece basit bir örnektir ve daha gelişmiş grafik tabanlı oyunlar için daha fazla özellik ve karmaşıklık ekleyebilirsiniz. Pygame kütüphanesinin sağladığı özelliklerle çizimler, animasyonlar, çarpışma algılama ve daha fazlasını yapabilirsiniz. Oyunu istediğiniz gibi geliştirebilir ve özelleştirebilirsiniz.
+
+
+
+
+
+import pygame
+
+# Oyun ekranı boyutları
+WIDTH = 800
+HEIGHT = 600
+
+# Renkler
+WHITE = (255, 255, 255)
+BLUE = (0, 0, 255)
+
+# Karakter özellikleri
+CHAR_WIDTH = 50
+CHAR_HEIGHT = 50
+CHAR_X = 50
+CHAR_Y = HEIGHT - CHAR_HEIGHT
+CHAR_SPEED = 5
+CHAR_JUMP_HEIGHT = 10
+CHAR_GRAVITY = 0.5
+
+# Zemin özellikleri
+GROUND_Y = HEIGHT - 50
+
+pygame.init()
+ekran = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Platform Oyunu")
+
+saat = pygame.time.Clock()
+
+zemin = pygame.Rect(0, GROUND_Y, WIDTH, HEIGHT - GROUND_Y)
+oyuncu = pygame.Rect(CHAR_X, CHAR_Y, CHAR_WIDTH, CHAR_HEIGHT)
+
+zemin_rengi = (150, 150, 150)
+
+oyun_devam = True
+zemin_ustunde = False
+dikey_hiz = 0
+
+while oyun_devam:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            oyun_devam = False
+
+    tuslar = pygame.key.get_pressed()
+    if tuslar[pygame.K_LEFT]:
+        oyuncu.x -= CHAR_SPEED
+    if tuslar[pygame.K_RIGHT]:
+        oyuncu.x += CHAR_SPEED
+    if tuslar[pygame.K_SPACE] and zemin_ustunde:
+        dikey_hiz = -CHAR_JUMP_HEIGHT
+
+    oyuncu.y += dikey_hiz
+    dikey_hiz += CHAR_GRAVITY
+
+    if oyuncu.colliderect(zemin):
+        zemin_ustunde = True
+        oyuncu.y = GROUND_Y - CHAR_HEIGHT
+        dikey_hiz = 0
+    else:
+        zemin_ustunde = False
+
+    ekran.fill(WHITE)
+    pygame.draw.rect(ekran, BLUE, oyuncu)
+    pygame.draw.rect(ekran, zemin_rengi, zemin)
+    
+    pygame.display.flip()
+    saat.tick(60)
+
+pygame.quit()
+Bu örnekte, pygame kütüphanesini kullanarak bir pencere oluşturuyoruz. Ardından, oyun döngüsünde kullanıcının tuş girişlerini dinliyoruz ve karakterin yatay hareketini sağlıyoruz. Zemin ile karakterin çarpışmasını kontrol ediyoruz ve zemin üzerindeyken karakterin zıplamasını sağlıyoruz. Karakterin düşme ve yerçekimi etkisini simüle ediyoruz.
+
+Oyun penceresinde karakteri kontrol etmek için "sol" ve "sağ" ok tuşlarını kullanabilirsiniz. "Boşluk" tuşuyla karakter zıplayabilirsiniz. Oyunun amacı, engellerin üzerinden zıplayarak ilerlemektir.
+
+Bu sadece basit bir örnektir ve daha gelişmiş platform oyunları için daha fazla özellik ve karmaşıklık ekleyebilirsiniz. Örneğin, daha fazla engel, düşman karakterler, puanlama sistemi ve seviyeler ekley
+
+
+
+
+
+
+
+
+
+
+
+import random
+
+def kelime_sec():
+    kelimeler = ["elma", "armut", "muz", "çilek", "portakal", "karpuz"]
+    return random.choice(kelimeler)
+
+def oyun():
+    kelime = kelime_sec()
+    tahmin_edilen = "_" * len(kelime)
+    can = 6
+    harf_listesi = []
+  
+    print("Adam Asmaca oyununa hoş geldiniz!")
+    print("Tahmin etmeniz gereken kelime {} harften oluşuyor.".format(len(kelime)))
+  
+    while can > 0 and "_" in tahmin_edilen:
+        print("\nTahmin edilen kelime:", " ".join(tahmin_edilen))
+        print("Kalan can:", can)
+        harf = input("Bir harf tahmin edin: ").lower()
+      
+        if len(harf) != 1:
+            print("Yanlış giriş! Sadece bir harf girin.")
+            continue
+      
+        if harf in harf_listesi:
+            print("Bu harfi zaten tahmin ettiniz. Başka bir harf deneyin.")
+            continue
+      
+        harf_listesi.append(harf)
+      
+        if harf in kelime:
+            for i in range(len(kelime)):
+                if kelime[i] == harf:
+                    tahmin_edilen = tahmin_edilen[:i] + harf + tahmin_edilen[i+1:]
+        else:
+            can -= 1
+            print("Yanlış tahmin! Kalan canınız:", can)
+      
+    if "_" not in tahmin_edilen:
+        print("\nTebrikler! Kelimeyi doğru tahmin ettiniz. Kelime:", kelime)
+    else:
+        print("\nÜzgünüm, kaybettiniz. Doğru kelime:", kelime)
+
+oyun()
+Bu örnek, oyunun temel mantığını içerir. kelime_sec fonksiyonu, kelime listesinden rastgele bir kelime seçmek için kullanılır. oyun fonksiyonu, oyunun ana döngüsünü yürütür. Kullanıcının tahminlerini alır, doğru tahminlerde kelimenin doğru yerlerine harfleri yerleştirir ve yanlış tahminlerde canı azaltır. Oyun, doğru tahmin edilen kelimeyi veya canlar tükenene kadar devam eder.
+
+Bu kod örneği sadece temel bir yapıyı göstermektedir. Oyunu daha da geliştirebilir, ek özellikler ekleyebilir veya kullanıcı arayüzünü iyileştirebilirsiniz.
+
+
+
+
+
+
+
+
+
+def asal_mi(sayi):
+    if sayi < 2:
+        return False
+    for i in range(2, int(sayi ** 0.5) + 1):
+        if sayi % i == 0:
+            return False
+    return True
+
+# Kullanıcıdan bir sayı girişi alalım
+sayi = int(input("Bir sayı girin: "))
+
+if asal_mi(sayi):
+    print(sayi, "asal bir sayıdır.")
+else:
+    print(sayi, "asal bir sayı değildir.")
+Bu kod, asal_mi() adında bir fonksiyon tanımlar. Fonksiyon, verilen bir sayının asal olup olmadığını kontrol eder ve sonuç olarak True (asal) veya False (asal değil) döndürür.
+
+Ana programda, kullanıcıdan bir sayı girişi alır ve asal_mi() fonksiyonunu kullanarak bu sayının asal olup olmadığını kontrol eder. Sonuca göre ekrana ilgili mesajı basar.
+
+Umarım bu size yardımcı olur! İhtiyaç duyduğunuz başka bir şey varsa, lütfen söyleyin.
+
+
+
+
+
